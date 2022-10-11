@@ -1,18 +1,5 @@
 <?php
-/**
- * Plugin Name: KOA WP REST API Menus
- * Plugin URI:  https://github.com/KingofApp/koa-wp-api-menus
- * Description: Extends WP API with WordPress menu routes.
- *
- * Version:     1.0.0
- *
- * Author:      King of App
- * Author URI:  https://github.com/KingofApp
- *
- * Text Domain: koa-wp-api-menus
- *
- * @package KOA_WP_API_MENU
- */
+
 
 /**
  * This program is free software; you can redistribute it and/or modify

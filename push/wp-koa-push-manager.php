@@ -1,14 +1,4 @@
 <?php
-/**
- * Plugin Name: King of app custom push
- * Plugin URI: https://kingofapp.com/
- * Description: Create a new endpoint to recive a device token and user info.
- * Version: 3.0
- * Author: King of app
- * Author URI: https://kingofapp.com/
- */
-
-
 
 /* init */
 if ( is_admin() ) { // admin actions

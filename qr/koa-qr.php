@@ -1,18 +1,4 @@
 <?php
-/**
- * Plugin Name: KOA QR
- * Plugin URI:  https://github.com/KingofApp/koa-wp-api-menus
- * Description: Create QR for app download
- *
- * Version:     1.0.0
- *
- * Author:      King of App
- * Author URI:  https://github.com/KingofApp
- *
- * Text Domain: koa-wp-qr
- *
- * @package KOA_WP_QR
- */
 
 /**
  * This program is free software; you can redistribute it and/or modify
