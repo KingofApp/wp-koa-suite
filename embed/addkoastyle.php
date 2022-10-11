@@ -17,6 +17,14 @@ function allow_embed() {
 function add_koa_style() {
    ?>
   <script>
+
+        document.addEventListener("click", function(event){
+			let target = event.path.find((e)=> e.tagName==="A" && e.hasAttribute("download"));
+			if(target){
+				//do stuf here
+				parent.postMessage({toDownload:target.href, preview: true}, "*");
+			}
+		});
       let koa_embed_key = "<?php echo get_option('koa_embed_key'); ?>";
       var keyWord = koa_embed_key != "" ? koa_embed_key : "kingOfApp";
       const urlParams = new URLSearchParams(window.location.search);
