@@ -17,14 +17,6 @@ function allow_embed() {
 function add_koa_style() {
    ?>
   <script>
-      function setCookie(cname, cvalue, exdays) {
-          var d = new Date();
-          d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-          var expires = "expires=" + d.toUTCString();
-          document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/" + ";Secure;samesite=None";
-      }
-      setCookie("allowFrame", "kingofapp", 30);
-      document.cookie = 'safari_cookie_fix=true; path=/';
       let koa_embed_key = "<?php echo get_option('koa_embed_key'); ?>";
       var keyWord = koa_embed_key != "" ? koa_embed_key : "kingOfApp";
       const urlParams = new URLSearchParams(window.location.search);
