@@ -17,3 +17,4 @@ if ( is_admin() ) { // admin actions
 }else{
 	include( plugin_dir_path(__FILE__).'main/noAdmin.php' );
 }
+include(WP_PLUGIN_DIR.'/wp-koa-suite/menus/koa-wp-api-menus.php');

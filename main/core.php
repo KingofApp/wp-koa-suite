@@ -10,7 +10,6 @@ function add_koa_menu(){
     include(WP_PLUGIN_DIR.'/wp-koa-suite/embed/main.php');
     include(WP_PLUGIN_DIR.'/wp-koa-suite/qr/koa-qr.php');
     include(WP_PLUGIN_DIR.'/wp-koa-suite/push/configform/setings.php');
-    include(WP_PLUGIN_DIR.'/wp-koa-suite/menus/koa-wp-api-menus.php');
 
     require_once( plugin_dir_path(__FILE__).'/view.php' );
 }

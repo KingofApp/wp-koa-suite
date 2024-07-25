@@ -17,17 +17,13 @@ function add_koa_style() {
    ?>
   <script>
 
-        document.addEventListener("click", function(event){
-			let target = event.path.find((e)=> e.tagName==="A" && e.hasAttribute("download"));
-			if(target){
-				//do stuf here
-				parent.postMessage({toDownload:target.href, preview: true}, "*");
-			}
-		});
       let koa_embed_key = "<?php echo get_option('koa_embed_key'); ?>";
       var keyWord = koa_embed_key != "" ? koa_embed_key : "kingOfApp";
       const urlParams = new URLSearchParams(window.location.search);
-      const myParam = urlParams.get(keyWord);
+      let myParam = urlParams.get(keyWord);
+      const encodedParam = window.location.search.indexOf(keyWord+"%3Dtrue") >= 0;
+      myParam = encodedParam ? "true" : myParam;
+
       if (myParam) {
           localStorage.setItem(keyWord, myParam);
       }
@@ -40,18 +36,23 @@ function add_koa_style() {
 	  
 	  function addEvents(){
 		  document.addEventListener("click", function(event){
-			let target = event.path.find((e)=> e.tagName==="A" && e.hasAttribute("download"));
-			if(target){
-				//do stuf here
-				parent.postMessage({toDownload:target.href, preview: true}, "*");
-			}
-		  
-		  	let link = event.path.find((elem)=> elem.tagName==="A" || elem.tagName==="a");
-       
-			if(!link ) return;
-			if(link.getAttribute("target") != "_blank") return;  
-			event.preventDefault();
-		  	parent.postMessage({toOpen: link.href}, "*");
+            try{
+                let target = event.path.find((e)=> e.tagName==="A" && e.hasAttribute("download"));
+                if(target){
+                    //do stuf here
+                    parent.postMessage({toDownload:target.href, preview: true}, "*");
+                }
+            
+                let link = event.path.find((elem)=> elem.tagName==="A" || elem.tagName==="a");
+        
+                if(!link ) return;
+                if(link.getAttribute("target") != "_blank") return;  
+                event.preventDefault();
+                parent.postMessage({toOpen: link.href}, "*");
+            }catch(e){
+                console.error(e);
+            }
+			
 		  
 		});
 	  }
