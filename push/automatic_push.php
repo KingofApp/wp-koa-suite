@@ -17,7 +17,7 @@ function firebase_push_notification_send_email($to, $subject, $message, $headers
           'Authorization' => 'Bearer YOUR_FCM_SERVER_KEY',
           'Content-Type' => 'application/json',
         ),
-        'body' => json_encode( $data ),
+        'body' => wp_json_encode( $data ),
       );
       
       $response = wp_remote_post( 'https://fcm.googleapis.com/fcm/send', $options );
