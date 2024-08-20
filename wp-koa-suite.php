@@ -9,7 +9,7 @@
  * Description: Manage and control all the koa plugins
  * Author: King of app
  * Author URI: https://kingofapp.com/
- */
+ */ 
 
 /* init */
 if ( is_admin() ) { // admin actions
