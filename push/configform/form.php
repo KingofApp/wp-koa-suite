@@ -1,7 +1,28 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<?php
+function enqueue_push_styles() {
+    // Enqueue the Google Fonts stylesheet (Roboto)
+    wp_enqueue_style(
+        'google-font-roboto', // Handle name for the Google Fonts stylesheet
+        'https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap', // URL to the Google Fonts stylesheet
+        array(), // Dependencies (none in this case)
+        null // Version number (null to avoid versioning)
+    );
+
+    // Enqueue the Font Awesome 4.7 stylesheet
+    wp_enqueue_style(
+        'font-awesome-4.7', // Handle name for the Font Awesome stylesheet
+        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css', // URL to the Font Awesome stylesheet
+        array(), // Dependencies (none in this case)
+        null // Version number (null to avoid versioning)
+    );
+}
+
+add_action('wp_enqueue_scripts', 'enqueue_push_styles');
+
+?>
+
 
 <form method="post" action="options.php" >
 <?php settings_fields( 'koa-push-settings-group' ); ?>

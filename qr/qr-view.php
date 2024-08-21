@@ -1,5 +1,4 @@
-	<div class="wrapQR">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<div class="wrapQR">
 		<style>
 			.wrapQR{
 				display: flex;
@@ -72,8 +71,6 @@
 		</form>
 		<div id="qrArea"></div>
 		
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js" integrity="sha512-J9QfbPuFlqGD2CYVCa6zn8/7PEgZnGpM5qtFOBZgwujjDnG5w5Fjx46YzqvIh/ORstcj7luStvvIHkisQi5SKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-		<script src="https://onelinkqr.nijat.net/js/qrcode.js"></script>
 		<script>
 			$(document).ready(function () {
 
@@ -127,3 +124,49 @@
 
 		</script>
     </div>
+<?php
+	
+function enqueue_koa_qr_scripts() {
+    // Enqueue jQuery with integrity, crossorigin, and referrerpolicy attributes
+    wp_enqueue_script(
+        'jquery-cdn', // Handle name for the script
+        'https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js', // URL to the script
+        array(), // Dependencies (none in this case since jQuery is loaded from CDN)
+        null, // Version number (null to avoid versioning)
+        true // Load in footer (true) or header (false)
+    );
+
+    // Add integrity, crossorigin, and referrerpolicy attributes to the script tag
+    wp_script_add_data('jquery-cdn', 'integrity', 'sha512-J9QfbPuFlqGD2CYVCa6zn8/7PEgZnGpM5qtFOBZgwujjDnG5w5Fjx46YzqvIh/ORstcj7luStvvIHkisQi5SKw==');
+    wp_script_add_data('jquery-cdn', 'crossorigin', 'anonymous');
+    wp_script_add_data('jquery-cdn', 'referrerpolicy', 'no-referrer');
+
+    // Enqueue the QR code script
+    wp_enqueue_script(
+        'qrcode-script', // Handle name for the script
+        'https://onelinkqr.nijat.net/js/qrcode.js', // URL to the script
+        array('jquery-cdn'), // Dependencies (ensure jQuery is loaded before this script)
+        null, // Version number (null to avoid versioning)
+        true // Load in footer (true) or header (false)
+    );
+}
+
+function enqueue_koa_qr_style() {
+    // Enqueue the Font Awesome stylesheet
+    wp_enqueue_style(
+        'font-awesome', // Handle name for the stylesheet
+        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css', // URL to the stylesheet
+        array(), // Dependencies (none in this case)
+        null // Version number (null to avoid versioning)
+    );
+
+    // Add integrity, crossorigin, and referrerpolicy attributes to the stylesheet link tag
+    wp_style_add_data('font-awesome', 'integrity', 'sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==');
+    wp_style_add_data('font-awesome', 'crossorigin', 'anonymous');
+    wp_style_add_data('font-awesome', 'referrerpolicy', 'no-referrer');
+}
+
+add_action('wp_enqueue_scripts', 'enqueue_koa_qr_style');
+
+
+add_action( 'wp_enqueue_scripts', 'enqueue_koa_qr_scripts' );

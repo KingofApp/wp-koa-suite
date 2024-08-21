@@ -5,6 +5,7 @@ add_action( 'after_setup_theme', 'allow_embed', 20);
 function allow_embed() {
     /* Adding user styles to head  */
     add_action( 'wp_head', 'add_koa_style' );
+    add_action( 'wp_enqueue_scripts', 'enqueue_iframe_resizer' );
      /* Allow woocommerce checkout page to be embeded */
     remove_action( 'template_redirect', 'wc_send_frame_options_header' );
     remove_action( 'login_init', 'send_frame_options_header' );
@@ -70,7 +71,17 @@ function add_koa_style() {
           }
       }
   </script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.2.9/iframeResizer.contentWindow.min.js"></script>
 <?php
+
 } 
+
+function enqueue_iframe_resizer() {
+    wp_enqueue_script(
+        'iframe-resizer', // Handle name for the script
+        'https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.2.9/iframeResizer.contentWindow.min.js', // Script source URL
+        array(), // Dependencies, if any
+        null, // Version number, null will avoid appending a version query string
+        true // Load in footer (true) or header (false)
+    );
+}
 
