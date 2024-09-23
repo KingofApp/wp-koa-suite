@@ -27,16 +27,16 @@ function koa_suite_view(){
     <div class="tab-content">
     <?php switch($tab) :
       case 'embed':
-         include(WP_PLUGIN_DIR.'/wp-koa-suite/embed/view.php');
+         include(WP_PLUGIN_DIR.'/koa-suite/embed/view.php');
         break;
       case 'push':
-         include(WP_PLUGIN_DIR.'/wp-koa-suite/push/configform/form.php');;
+         include(WP_PLUGIN_DIR.'/koa-suite/push/configform/form.php');;
         break;
       case 'qr':
-         include(WP_PLUGIN_DIR.'/wp-koa-suite/qr/qr-view.php');
+         include(WP_PLUGIN_DIR.'/koa-suite/qr/qr-view.php');
         break;
       default:
-         include(WP_PLUGIN_DIR.'/wp-koa-suite/dashboard/main.php');
+         include(WP_PLUGIN_DIR.'/koa-suite/dashboard/main.php');
         break;
     endswitch;?>	
     </div>

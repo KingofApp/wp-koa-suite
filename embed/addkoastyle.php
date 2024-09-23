@@ -32,11 +32,13 @@ function add_koa_style() {
           let koa_embed_style = `<?php echo get_option('koa_embed_style'); ?>`;
           var css = koa_embed_style != "" ? koa_embed_style : 'header, footer{ display:none } .elegantshop-products-wrapper{opacity: 1 !important;}';
           addStyle();
-          addEvents();
+          //addEvents();
       }
 	  
 	  function addEvents(){
-		  document.addEventListener("click", function(event){
+
+        //manage download attribute
+		document.addEventListener("click", function(event){
             try{
                 let target = event.path.find((e)=> e.tagName==="A" && e.hasAttribute("download"));
                 if(target){

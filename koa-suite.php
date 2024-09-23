@@ -1,7 +1,8 @@
 <?php
 /**
- * @package wp_koa_suite
- * @version 1.0.0
+ * @package koa_suite
+ * @version 1.0.3
+ * @license GPLv2 or later
  */
 /**
  * Plugin Name: King of app suite
@@ -34,4 +35,4 @@ if ( is_admin() ) { // admin actions
 }else{
 	include( plugin_dir_path(__FILE__).'main/noAdmin.php' );
 }
-include(WP_PLUGIN_DIR.'/wp-koa-suite/menus/koa-wp-api-menus.php');
+include(WP_PLUGIN_DIR.'/koa-suite/menus/koa-wp-api-menus.php');

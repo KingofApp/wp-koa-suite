@@ -19,7 +19,7 @@ This plugin requires a valid King of App account to use the platform's features.
 **Important:** This plugin serves as a connector to a SaaS platform. It does not function as a standalone application. The King of App service provides all the core functionality for building and managing mobile apps.
 For more information about the service, please refer to our [Terms of Use](https://kingofapp.com/terms).
 == Installation ==
-1. Upload the `wp-koa-suite` folder to the `/wp-content/plugins/` directory.
+1. Upload the `koa-suite` folder to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
 3. Navigate to the "King of App" menu in the WordPress dashboard to access the platform.
 == Frequently Asked Questions ==
