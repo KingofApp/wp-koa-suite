@@ -36,3 +36,4 @@ if ( is_admin() ) { // admin actions
 	include( plugin_dir_path(__FILE__).'main/noAdmin.php' );
 }
 include(WP_PLUGIN_DIR.'/koa-suite/menus/koa-wp-api-menus.php');
+include(WP_PLUGIN_DIR.'/koa-suite/push/wp-koa-push-manager.php');
