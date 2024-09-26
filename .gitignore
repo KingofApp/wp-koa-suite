@@ -1,8 +1,8 @@
-# Ignore everything inside koa-suite/push/includes/vendor
-koa-suite/push/includes/vendor/*
+# Ignore everything inside push/includes/vendor
+push/includes/vendor/*
 
 # Do not ignore the vendor/ folder itself
-!koa-suite/push/includes/vendor/
+!push/includes/vendor/
 
 # Keep the autoload.php file if needed
-!koa-suite/push/includes/vendor/autoload.php
+!push/includes/vendor/autoload.php
