@@ -1,7 +1,7 @@
 <?php
 /**
  * @package koa_suite
- * @version 1.0.3
+ * @version 1.1.0
  * @license GPLv2 or later
  */
 /**

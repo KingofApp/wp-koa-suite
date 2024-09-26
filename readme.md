@@ -3,7 +3,7 @@ Contributors: King of App
 Tags: SaaS, app management, mobile apps, plugin suite
 Requires at least: 5.0
 Tested up to: 6.6.1
-Stable tag: 1.0.1
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Manage and control all King of App plugins. King of App Suite is a powerful SaaS platform that enables users to build and manage mobile applications from within WordPress.
