@@ -1,8 +1,2 @@
 # Ignore everything inside push/includes/vendor
 push/includes/vendor/*
-
-# Do not ignore the vendor/ folder itself
-!push/includes/vendor/
-
-# Keep the autoload.php file if needed
-!push/includes/vendor/autoload.php
