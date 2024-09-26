@@ -30,7 +30,7 @@ function koa_suite_view(){
          include(WP_PLUGIN_DIR.'/koa-suite/embed/view.php');
         break;
       case 'push':
-         include(WP_PLUGIN_DIR.'/koa-suite/push/configform/form.php');;
+         include(WP_PLUGIN_DIR.'/koa-suite/push/admin/tabs.php');;
         break;
       case 'qr':
          include(WP_PLUGIN_DIR.'/koa-suite/qr/qr-view.php');

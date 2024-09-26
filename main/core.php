@@ -9,7 +9,7 @@ function add_koa_menu(){
     //import 
     include(WP_PLUGIN_DIR.'/koa-suite/embed/main.php');
     include(WP_PLUGIN_DIR.'/koa-suite/qr/koa-qr.php');
-    include(WP_PLUGIN_DIR.'/koa-suite/push/configform/setings.php');
+    include(WP_PLUGIN_DIR.'/koa-suite/push/wp-koa-push-manager.php');
 
     require_once( plugin_dir_path(__FILE__).'/view.php' );
 }
