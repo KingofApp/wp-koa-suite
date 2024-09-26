@@ -54,17 +54,17 @@
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error("Error response from server:", errorData);
-                alert(`Failed to send push notification: ${errorData.message || "Unknown error"}`);
+                showForOneSecond("#pushStatus .error");
+                //alert(`Failed to send push notification: ${errorData.message || "Unknown error"}`);
                 return null;
-            }
+            }else{
+				console.log("Push notification sent successfully:", response);
 
-            // Parse and handle the response
-            const responseData = await response.json();
-            console.log("Push notification sent successfully:", responseData);
-
-            // Show success message to the user
-            alert("Push notification sent successfully.");
-            return responseData;
+				// Show success message to the user
+                showForOneSecond("#pushStatus .success");
+				//alert("Push notification sent successfully.");
+				return;
+			}
 
         } catch (error) {
             // Handle network or other unexpected errors
@@ -73,5 +73,21 @@
             return null;
         }
     }  
+
+    function showForOneSecond(selector) {
+        const element = document.querySelector(selector);
+        
+        if (element) {
+            // Set display to 'block'
+            element.style.display = "block";
+            
+            // After 1 second (1000 milliseconds), set display back to 'none'
+            setTimeout(() => {
+                element.style.display = "none";
+            }, 1000);
+        } else {
+            console.error(`Element not found with selector: ${selector}`);
+        }
+    }
 	
 </script>
