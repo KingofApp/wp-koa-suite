@@ -89,34 +89,46 @@ function enqueue_iframe_resizer() {
 
 //shortcode [replicate_landing] allow duplication of home page
 function replicate_landing_shortcode() {
-    // Output a div where the fetch result will be displayed
     ob_start();
-    ?>
-    <div id="custom-section-result" class="custom-section">
-        <!-- The fetched content will be inserted here -->
-        Loading content...
-    </div>
-    
-    <script type="text/javascript">
-        document.addEventListener("DOMContentLoaded", function() {
-            fetch('<?php echo get_site_url(); ?>')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+
+    // Temporarily disable lazy loading
+    add_filter('wp_lazy_loading_enabled', '__return_false');
+
+    // Check if the home page is static or shows latest posts
+    if ( get_option('show_on_front') === 'page' ) {
+        // Static front page
+        $homepage_id = get_option('page_on_front');
+        $homepage = get_post($homepage_id);
+        echo '<div class="homepage-content">';
+        echo apply_filters('the_content', $homepage->post_content);
+        echo '</div>';
+    } else {
+        // Home page is showing latest posts
+        $args = array(
+            'posts_per_page' => 5, // Adjust this number for how many posts you want to show
+        );
+        $homepage_query = new WP_Query($args);
+        
+        if ( $homepage_query->have_posts() ) {
+            while ( $homepage_query->have_posts() ) {
+                $homepage_query->the_post();
+                echo '<div class="post">';
+                echo '<h2><a href="' . get_permalink() . '">' . get_the_title() . '</a></h2>';
+                echo '<div class="post-content">' . get_the_excerpt() . '</div>';
+                if ( has_post_thumbnail() ) {
+                    echo get_the_post_thumbnail(get_the_ID(), 'full');
                 }
-                return response.text();
-            })
-            .then(data => {
-                // Insert the fetched HTML content into the div
-                document.getElementById('custom-section-result').innerHTML = data;
-            })
-            .catch(error => {
-                console.error('Fetch error:', error);
-                document.getElementById('custom-section-result').innerHTML = "An error occurred while fetching content.";
-            });
-        });
-    </script>
-    <?php
+                echo '</div>';
+            }
+            wp_reset_postdata();
+        } else {
+            echo 'No posts found.';
+        }
+    }
+
+    // Re-enable lazy loading after content is displayed
+    remove_filter('wp_lazy_loading_enabled', '__return_false');
+
     return ob_get_clean();
 }
 add_shortcode('replicate_landing', 'replicate_landing_shortcode');
