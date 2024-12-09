@@ -1,0 +1,36 @@
+/* Estilos personalizados para Koa Suite */
+.wrap {
+    margin: 10px 20px 0 2px;
+}
+
+.list-group-item {
+    border-radius: 0;
+    border-left: 3px solid transparent;
+}
+
+.list-group-item.active {
+    background-color: #f8f9fa;
+    color: #2271b1;
+    border-left: 3px solid #2271b1;
+    font-weight: 500;
+}
+
+.tab-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Compatibilidad con WordPress */
+.wrap .page-title-action {
+    margin-left: 4px;
+    padding: 4px 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .col-md-3 {
+        margin-bottom: 20px;
+    }
+} 
