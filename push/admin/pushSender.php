@@ -20,6 +20,12 @@
                 alert("Invalid user ID.");
                 return null;
             }
+            
+            if( !window.koa_push_single_user_code ){
+                console.error("Device code not provided");
+                alert("Device code Error");
+                return null;
+            }            
 
             // Get the title and body inputs from the DOM
             const title = document.getElementById("title").value.trim();
@@ -35,6 +41,7 @@
             // Prepare the request options for the fetch call
             const requestData = {
                 user_id: window.koa_push_single_user_id,
+                device_token: window.koa_push_single_user_code,
                 title: title,
                 body: body
             };
@@ -48,7 +55,7 @@
             };
 
             // Make the fetch call to the REST API
-            const response = await fetch("/wp-json/firebase/v1/send-notification/", requestOptions);
+            const response = await fetch(window.location.origin + "?rest_route=/firebase/v1/send-notification/", requestOptions);
 
             // Check if the response is not OK (e.g., status is not 2xx)
             if (!response.ok) {
