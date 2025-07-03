@@ -24,19 +24,18 @@
 			
 	  ?>
 		
-	  <tr style="display: <?php echo $showThis; ?> ">
+	  <tr style="display: <?php echo isset($showThis) ? $showThis : 'flex'; ?> ">
 		<td> <input type="checkbox"/> </td>
 		<td><?php echo '<span>' . esc_html( $user->display_name  ) . '</span>'; ?></td>
 		<td><?php echo '<span>' . esc_html( $user->user_email ) . '</span>'; ?></td>
 		<td><?php if (get_user_meta( $user->ID, 'koa_push_code', true  )){ ?>
-		  			 <button class="btn"  type="button"  onclick="openPushSender(' <?php echo $user->ID; ?> ')">Send</button>
+		  			 <button class="btn"  type="button"  onclick="openPushSender(' <?php echo $user->ID; ?> ', '<?php echo get_user_meta( $user->ID, 'koa_push_code', true  ); ?>')">Send</button>
 					<?php
 	  			  }else{
 		  			echo "<button  type='button' class='btn' disabled>Send</button>";
 	  			  }
 			?></td>
-		  <td><?php echo get_user_meta( $user->ID, 'koa_push_code', true  ); ?></td>
+		  <td><textarea><?php echo get_user_meta( $user->ID, 'koa_push_code', true  ); ?></textarea></td>
 	  </tr>
 	 <?php } ?>
 </table>
-
