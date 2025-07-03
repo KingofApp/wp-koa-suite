@@ -73,9 +73,10 @@
 <script>	
 	//let auth =  '<?php echo get_option('koa_push_auth'); ?>';
 	
-	function openPushSender(user_ID){
+	function openPushSender(user_ID, device_code){
 		//save data
 		window.koa_push_single_user_id = user_ID;
+		window.koa_push_single_user_code = device_code;
 		goTab(2, false, true);
 	}
 	
