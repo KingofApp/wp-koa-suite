@@ -1,2 +1,5 @@
 # Ignore everything inside push/includes/vendor
 push/includes/vendor/*
+
+# Ignore desktop.ini in the root (same folder as .gitignore)
+/desktop.ini
