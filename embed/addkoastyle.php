@@ -11,7 +11,7 @@ function allow_embed() {
     remove_action( 'login_init', 'send_frame_options_header' );
     remove_action( 'admin_init', 'send_frame_options_header' );
     remove_action( 'template_redirect', 'wc_send_frame_options_header' );
-    header('X-Frame-Options: ALLOWALL');
+    //header('X-Frame-Options: ALLOWALL');
 }
 
 function add_koa_style() {
