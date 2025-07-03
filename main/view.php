@@ -91,4 +91,33 @@ function koa_suite_view() {
       </div>
   </div>
   <?php
-}?>
+}
+/*
+// En la función que maneja el menú principal
+function koa_admin_menu_page() {
+    $tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'dashboard';
+    ?>
+    <div class="wrap">
+        <h1>Koa Suite</h1>
+        
+        <!-- Pestañas principales -->
+        <nav class="nav-tab-wrapper">
+            <a href="?page=koa-suite&tab=dashboard" class="nav-tab <?php echo $tab === 'dashboard' ? 'nav-tab-active' : ''; ?>">Dashboard</a>
+            <a href="?page=koa-suite&tab=analytics" class="nav-tab <?php echo $tab === 'analytics' ? 'nav-tab-active' : ''; ?>">Analytics</a>
+            <!-- Otras pestañas... -->
+        </nav>
+
+        <?php
+        switch ($tab) {
+            case 'analytics':
+                koa_analytics_tab_content();
+                break;
+            case 'dashboard':
+            default:
+                require_once plugin_dir_path(__FILE__) . 'dashboard/dashboard.php';
+                break;
+        }
+        ?>
+    </div>
+    <?php
+}*/
