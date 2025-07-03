@@ -37,7 +37,7 @@ add_action('rest_api_init', function () {
     register_rest_route('firebase/v1', '/send-notification/', array(
         'methods' => 'POST',
         'callback' => 'send_firebase_notification',
-        'permission_callback' => '__return_true', // Adjust for real permissions
+        'permission_callback' => 'validate_api_request'
     ));
 });
 
@@ -49,7 +49,17 @@ function send_firebase_notification( WP_REST_Request $request ) {
     $user_id = sanitize_text_field( $request->get_param('user_id') );
     $title = sanitize_text_field( $request->get_param('title') );
     $body = sanitize_text_field( $request->get_param('body') );
-    //$secret = sanitize_text_field( $request->get_param('secret') );
+    
+    // Get optional parameter (could be a string or an array)
+    $custom_user = $request->get_param('device_token'); // Might be NULL, string, or array
+
+    if (is_null($custom_user)) {
+        $custom_user = ''; // Default value if not provided
+    } elseif (is_array($custom_user)) {
+        $custom_user = array_map('sanitize_text_field', $custom_user); // Sanitize array
+    } else {
+        $custom_user = sanitize_text_field($custom_user); // Sanitize string
+    }
 
     // Validate the input
     if ( empty( $user_id ) || empty( $title ) || empty( $body ) ) {
@@ -101,7 +111,32 @@ function send_firebase_notification( WP_REST_Request $request ) {
                 'title' => $title,
                 'body' => $body,
             ),
-            'token' => $user_token,
+            'token' => $custom_user,
+            'android' => array(
+                'priority' => 'high',
+                'notification' => array(
+                    "title" => $title,
+                    "body" => $body,
+                    "color" => '#44ff00',
+                    "sound" => 'default',
+                    "default_sound" => true,
+                    "default_vibrate_timings" => true,
+                    "default_light_settings" => true,
+                    "light_settings" => array(
+                        "color" => array(
+                            "red" => 1,
+                            "green" => 1,
+                            "blue" => 1,
+                            "alpha" => 1.0
+                        )
+                    ),
+                ),
+            ),
+            'apns' => array(
+                'headers' => array(
+                    'apns-priority' => '10'
+                )
+            ),
         )
     );
     $response = wp_remote_post( $fcm_url, array(
@@ -139,8 +174,35 @@ function send_firebase_notification( WP_REST_Request $request ) {
     ));
 
     if ( $status === 'failed' ) {
-        return new WP_Error( 'send_error', 'Failed to send notification: ' . $error_message, array( 'status' => 500 ) );
+        $error = new WP_Error('send_error', 'Failed to send notification: ' . $error_message, array('status' => 500));
+        error_log('Firebase Notification Error: ' . $error->get_error_message());
+        return $error;
     }
 
     return rest_ensure_response( array( 'success' => true, 'message' => 'Notification sent successfully.' ) );
+}
+
+function validate_api_request($request) {
+    // Allow if request comes from same domain
+    $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+    $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+    $site_url = get_site_url();
+
+    if (
+        (strpos($origin, $site_url) === 0) || 
+        (strpos($referer, $site_url) === 0)
+    ) {
+        return true;
+    }
+
+    // Fallback: require logged-in user with proper capability
+    if (!is_user_logged_in()) {
+        return new WP_Error('rest_forbidden', __('You do not have permission to access this API.'), array('status' => 403));
+    }
+
+    if (!current_user_can('manage_options')) {
+        return new WP_Error('rest_forbidden', __('You do not have permission.'), array('status' => 403));
+    }
+
+    return true;
 }
