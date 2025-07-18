@@ -15,6 +15,17 @@
     	margin-bottom: 67px;
 	}
 
+	#koapush .pagination{
+	    margin-top: 20px;
+		width: 100%;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		justify-content: center;
+		align-items: center;
+		padding-bottom: 50px;
+		gap: 10px;
+	}
 
 	#koapush input[type=text] {
 		padding: 6px;
