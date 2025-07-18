@@ -1,5 +1,6 @@
 <?php
 function koa_suite_view() {
+  $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'dashboard';
   // Definir las rutas de los archivos
   $plugin_dir = plugin_dir_path(dirname(__FILE__));
   $dashboard_file = $plugin_dir . 'dashboard/main.php';
@@ -14,110 +15,67 @@ function koa_suite_view() {
           <!-- Pestañas superiores -->
           <ul class="nav nav-tabs mb-4">
               <li class="nav-item">
-                  <a class="nav-link active" href="#dashboard" data-bs-toggle="tab">Dashboard</a>
+                  <a class="nav-link <?php echo ($active_tab == 'dashboard') ? 'active' : ''; ?>" href="<?php echo admin_url('admin.php?page=koa-suite&tab=dashboard'); ?>">Dashboard</a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link" href="#koa-embed" data-bs-toggle="tab">KOA Embed</a>
+                  <a class="nav-link <?php echo ($active_tab == 'koa-embed') ? 'active' : ''; ?>" href="<?php echo admin_url('admin.php?page=koa-suite&tab=koa-embed'); ?>">KOA Embed</a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link" href="#analytics" data-bs-toggle="tab">Analytics</a>
+                  <a class="nav-link <?php echo ($active_tab == 'analytics') ? 'active' : ''; ?>" href="<?php echo admin_url('admin.php?page=koa-suite&tab=analytics'); ?>">Analytics</a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link" href="#push" data-bs-toggle="tab">Push Notifications</a>
+                  <a class="nav-link <?php echo ($active_tab == 'push') ? 'active' : ''; ?>" href="<?php echo admin_url('admin.php?page=koa-suite&tab=push'); ?>">Push Notifications</a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link" href="#qr" data-bs-toggle="tab">Distribution</a>
+                  <a class="nav-link <?php echo ($active_tab == 'qr') ? 'active' : ''; ?>" href="<?php echo admin_url('admin.php?page=koa-suite&tab=qr'); ?>">Distribution</a>
               </li>
           </ul>
 
           <!-- Contenido -->
           <div class="tab-content">
-              <div class="tab-pane fade show active" id="dashboard">
-                  <?php 
-                  if (file_exists($dashboard_file)) {
-                      include($dashboard_file);
-                  } else {
-                      echo '<div class="alert alert-warning">
-                          Dashboard file not found at: ' . esc_html($dashboard_file) . '
-                      </div>';
-                  }
-                  ?>
-              </div>
-              <div class="tab-pane fade" id="koa-embed">
-                  <?php 
-                  if (file_exists($embed_file)) {
-                      include($embed_file);
-                  } else {
-                      echo '<div class="alert alert-warning">
-                          Embed file not found at: ' . esc_html($embed_file) . '
-                      </div>';
-                  }
-                  ?>
-              </div>
-              <div class="tab-pane fade" id="analytics">
-                  <?php 
-                  if (file_exists($analytics_file)) {
-                      include($analytics_file);
-                  } else {
-                      echo '<div class="alert alert-warning">
-                          Analytics file not found at: ' . esc_html($analytics_file) . '
-                      </div>';
-                  }
-                  ?>
-              </div>
-              <div class="tab-pane fade" id="push">
-                  <?php 
-                  if (file_exists($push_file)) {
-                      include($push_file);
-                  } else {
-                      echo '<div class="alert alert-warning">
-                          Push Notifications file not found at: ' . esc_html($push_file) . '
-                      </div>';
-                  }
-                  ?>
-              </div>
-              <div class="tab-pane fade" id="qr">
-                  <?php 
-                  if (file_exists($qr_file)) {
-                      include($qr_file);
-                  } else {
-                      echo '<div class="alert alert-warning">
-                          QR Generator file not found at: ' . esc_html($qr_file) . '
-                      </div>';
-                  }
-                  ?>
-              </div>
+              <?php
+              switch ($active_tab) {
+                  case 'dashboard':
+                      if (file_exists($dashboard_file)) {
+                          include($dashboard_file);
+                      } else {
+                          echo '<div class="alert alert-warning">Dashboard file not found at: ' . esc_html($dashboard_file) . '</div>';
+                      }
+                      break;
+                  case 'koa-embed':
+                      if (file_exists($embed_file)) {
+                          include($embed_file);
+                      } else {
+                          echo '<div class="alert alert-warning">Embed file not found at: ' . esc_html($embed_file) . '</div>';
+                      }
+                      break;
+                  case 'analytics':
+                      if (file_exists($analytics_file)) {
+                          include($analytics_file);
+                      } else {
+                          echo '<div class="alert alert-warning">Analytics file not found at: ' . esc_html($analytics_file) . '</div>';
+                      }
+                      break;
+                  case 'push':
+                      if (file_exists($push_file)) {
+                          include($push_file);
+                      } else {
+                          echo '<div class="alert alert-warning">Push Notifications file not found at: ' . esc_html($push_file) . '</div>';
+                      }
+                      break;
+                  case 'qr':
+                      if (file_exists($qr_file)) {
+                          include($qr_file);
+                      } else {
+                          echo '<div class="alert alert-warning">QR Generator file not found at: ' . esc_html($qr_file) . '</div>';
+                      }
+                      break;
+                  default:
+                      echo '<div class="alert alert-warning">Invalid tab selected.</div>';
+              }
+              ?>
           </div>
       </div>
   </div>
   <?php
 }
-/*
-// En la función que maneja el menú principal
-function koa_admin_menu_page() {
-    $tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'dashboard';
-    ?>
-    <div class="wrap">
-        <h1>Koa Suite</h1>
-        
-        <!-- Pestañas principales -->
-        <nav class="nav-tab-wrapper">
-            <a href="?page=koa-suite&tab=dashboard" class="nav-tab <?php echo $tab === 'dashboard' ? 'nav-tab-active' : ''; ?>">Dashboard</a>
-            <a href="?page=koa-suite&tab=analytics" class="nav-tab <?php echo $tab === 'analytics' ? 'nav-tab-active' : ''; ?>">Analytics</a>
-            <!-- Otras pestañas... -->
-        </nav>
-
-        <?php
-        switch ($tab) {
-            case 'analytics':
-                koa_analytics_tab_content();
-                break;
-            case 'dashboard':
-            default:
-                require_once plugin_dir_path(__FILE__) . 'dashboard/dashboard.php';
-                break;
-        }
-        ?>
-    </div>
-    <?php
-}*/
