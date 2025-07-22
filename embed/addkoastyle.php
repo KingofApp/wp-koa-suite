@@ -11,7 +11,6 @@ function allow_embed() {
     remove_action( 'login_init', 'send_frame_options_header' );
     remove_action( 'admin_init', 'send_frame_options_header' );
     remove_action( 'template_redirect', 'wc_send_frame_options_header' );
-    //header('X-Frame-Options: ALLOWALL');
 }
 
 function add_koa_style() {
@@ -32,13 +31,19 @@ function add_koa_style() {
           let koa_embed_style = `<?php echo get_option('koa_embed_style'); ?>`;
           var css = koa_embed_style != "" ? koa_embed_style : 'header, footer{ display:none } .elegantshop-products-wrapper{opacity: 1 !important;}';
           addStyle();
-          //addEvents();
+          addEvents();
       }
 	  
 	  function addEvents(){
+        document.addEventListener("DOMContentLoaded", function () {
+            // Select all <a> elements with the class "koa_mobile_link"
+            document.querySelectorAll("a.koa_mobile_link").forEach(function(link) {
+                link.target = "_parent";
+            });
+        });
 
         //manage download attribute
-		document.addEventListener("click", function(event){
+		/*document.addEventListener("click", function(event){
             try{
                 let target = event.path.find((e)=> e.tagName==="A" && e.hasAttribute("download"));
                 if(target){
@@ -54,10 +59,8 @@ function add_koa_style() {
                 parent.postMessage({toOpen: link.href}, "*");
             }catch(e){
                 console.error(e);
-            }
-			
-		  
-		});
+            }		  
+		});*/
 	  }
       
       function addStyle() {
