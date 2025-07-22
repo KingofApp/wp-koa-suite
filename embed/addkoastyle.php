@@ -36,11 +36,16 @@ function add_koa_style() {
 	  
 	  function addEvents(){
         document.addEventListener("DOMContentLoaded", function () {
-            // Select all <a> elements with the class "koa_mobile_link"
-            document.querySelectorAll("a.koa_mobile_link").forEach(function(link) {
-                link.target = "_parent";
-            });
-        });
+			// Open in the app
+			document.querySelectorAll("a.koa_mobile_link").forEach(function(link) {
+				link.target = "_parent";
+			});
+
+			// Open in a new tab
+			document.querySelectorAll("a.koa_open_blank").forEach(function(link) {
+				link.target = "_blank";
+			});
+		});
 
         //manage download attribute
 		/*document.addEventListener("click", function(event){

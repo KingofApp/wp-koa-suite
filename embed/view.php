@@ -4,17 +4,23 @@
         <img src="https://s3-eu-west-1.amazonaws.com/kingofapp.es/logo.png" style="max-width: 100%" alt="king of app">
     </a>
 
-    <!-- ✅ INFO SECTION ADDED HERE -->
+    <!-- ✅ INFO SECTION UPDATED -->
     <div style="background: #f1f1f1; padding: 15px; border: 1px solid #ddd; margin-top: 20px;">
         <h2>Info</h2>
         <p>
             If you add the class <code>koa_mobile_link</code> to any 
             <code>&lt;a&gt;</code> element, the link will automatically open inside the app 
-            instead of the default browser.  
+            instead of the default browser.
         </p>
-        <p><strong>Example:</strong></p>
+        <p>
+            If you add the class <code>koa_open_blank</code> to any 
+            <code>&lt;a&gt;</code> element, the link will open in a new browser tab or window.
+        </p>
+
+        <p><strong>Examples:</strong></p>
         <pre>
 &lt;a href="https://example.com" class="koa_mobile_link"&gt;Open in App&lt;/a&gt;
+&lt;a href="https://example.com" class="koa_open_blank"&gt;Open in New Tab&lt;/a&gt;
         </pre>
     </div>
     <!-- ✅ END INFO SECTION -->
