@@ -34,6 +34,7 @@ function koa_create_push_notifications_table() {
     $sql = "CREATE TABLE $table_name (
         id bigint(20) NOT NULL AUTO_INCREMENT,
         user_id bigint(20) NOT NULL,
+        device_token varchar(255) NOT NULL,
         notification_title varchar(255) NOT NULL,
         notification_body text NOT NULL,
         notification_send_date datetime NOT NULL,
