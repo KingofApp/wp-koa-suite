@@ -121,9 +121,55 @@ $total_pages = ceil($total_items / $items_per_page);
     <?php if($page > 1): ?>
         <a href="?page=koa-suite&tab=push&push-tab=pushHistory&page_num=<?php echo $page-1; ?>&search=<?php echo urlencode($search_query); ?>">« Prev</a>
     <?php endif; ?>
-    <?php for($i = 1; $i <= $total_pages; $i++): ?>
-        <a href="?page=koa-suite&tab=push&push-tab=pushHistory&page_num=<?php echo $i; ?>&search=<?php echo urlencode($search_query); ?>" <?php if($i == $page) echo 'style="font-weight:bold;"'; ?>><?php echo $i; ?></a>
-    <?php endfor; ?>
+
+    <?php
+    if ($total_pages <= 6) {
+        for ($i = 1; $i <= $total_pages; $i++) {
+            echo '<a href="?page=koa-suite&tab=push&push-tab=pushHistory&page_num=' . $i . '&search=' . urlencode($search_query) . '"';
+            if ($i == $page) echo ' style="font-weight:bold;"';
+            echo '>' . $i . '</a>';
+        }
+    } else {
+        // Near the start
+        if ($page <= 3) {
+            for ($i = 1; $i <= 3; $i++) {
+                echo '<a href="?page=koa-suite&tab=push&push-tab=pushHistory&page_num=' . $i . '&search=' . urlencode($search_query) . '"';
+                if ($i == $page) echo ' style="font-weight:bold;"';
+                echo '>' . $i . '</a>';
+            }
+            echo '<span>...</span>';
+            for ($i = $total_pages - 2; $i <= $total_pages; $i++) {
+                echo '<a href="?page=koa-suite&tab=push&push-tab=pushHistory&page_num=' . $i . '&search=' . urlencode($search_query) . '"';
+                if ($i == $page) echo ' style="font-weight:bold;"';
+                echo '>' . $i . '</a>';
+            }
+        }
+        // Middle pages
+        elseif ($page > 3 && $page < $total_pages - 2) {
+            for ($i = $page - 2; $i <= $page; $i++) {
+                echo '<a href="?page=koa-suite&tab=push&push-tab=pushHistory&page_num=' . $i . '&search=' . urlencode($search_query) . '"';
+                if ($i == $page) echo ' style="font-weight:bold;"';
+                echo '>' . $i . '</a>';
+            }
+            echo '<span>...</span>';
+            for ($i = $total_pages - 2; $i <= $total_pages; $i++) {
+                echo '<a href="?page=koa-suite&tab=push&push-tab=pushHistory&page_num=' . $i . '&search=' . urlencode($search_query) . '"';
+                if ($i == $page) echo ' style="font-weight:bold;"';
+                echo '>' . $i . '</a>';
+            }
+        }
+        // Near the end
+        else {
+            for ($i = $total_pages - 5; $i <= $total_pages; $i++) {
+                if ($i < 1) continue;
+                echo '<a href="?page=koa-suite&tab=push&push-tab=pushHistory&page_num=' . $i . '&search=' . urlencode($search_query) . '"';
+                if ($i == $page) echo ' style="font-weight:bold;"';
+                echo '>' . $i . '</a>';
+            }
+        }
+    }
+    ?>
+
     <?php if($page < $total_pages): ?>
         <a href="?page=koa-suite&tab=push&push-tab=pushHistory&page_num=<?php echo $page+1; ?>&search=<?php echo urlencode($search_query); ?>">Next »</a>
     <?php endif; ?>

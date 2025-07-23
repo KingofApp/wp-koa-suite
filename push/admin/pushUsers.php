@@ -30,7 +30,7 @@ $users = array_slice($filtered_users, $offset, $per_page);
 
 <form method="get">
     <input type="hidden" name="page" value="koa-suite" />
-    <input type="hidden" name="tab" value="push" /> <!-- Add this line -->
+    <input type="hidden" name="tab" value="push" />
     <div class="searchBar">
         <button type="submit"><i class="fa fa-search"></i></button>
         <input type="text" placeholder="Search.." name="koa_push_search" value="<?php echo esc_attr($search); ?>">
@@ -68,9 +68,56 @@ $users = array_slice($filtered_users, $offset, $per_page);
     <?php if($page > 1): ?>
         <a href="?page=koa-suite&tab=push&paged=<?php echo $page-1; ?>&koa_push_search=<?php echo urlencode($search); ?>">« Prev</a>
     <?php endif; ?>
-    <?php for($i = 1; $i <= $total_pages; $i++): ?>
-        <a href="?page=koa-suite&tab=push&paged=<?php echo $i; ?>&koa_push_search=<?php echo urlencode($search); ?>" <?php if($i == $page) echo 'style="font-weight:bold;"'; ?>><?php echo $i; ?></a>
-    <?php endfor; ?>
+
+    <?php
+    // If total pages <= 6, show all
+    if ($total_pages <= 6) {
+        for ($i = 1; $i <= $total_pages; $i++) {
+            echo '<a href="?page=koa-suite&tab=push&paged=' . $i . '&koa_push_search=' . urlencode($search) . '"';
+            if ($i == $page) echo ' style="font-weight:bold;"';
+            echo '>' . $i . '</a>';
+        }
+    } else {
+        // If current page is near the start
+        if ($page <= 3) {
+            for ($i = 1; $i <= 3; $i++) {
+                echo '<a href="?page=koa-suite&tab=push&paged=' . $i . '&koa_push_search=' . urlencode($search) . '"';
+                if ($i == $page) echo ' style="font-weight:bold;"';
+                echo '>' . $i . '</a>';
+            }
+            echo '<span>...</span>';
+            for ($i = $total_pages - 2; $i <= $total_pages; $i++) {
+                echo '<a href="?page=koa-suite&tab=push&paged=' . $i . '&koa_push_search=' . urlencode($search) . '"';
+                if ($i == $page) echo ' style="font-weight:bold;"';
+                echo '>' . $i . '</a>';
+            }
+        }
+        // If current page is in the middle
+        elseif ($page > 3 && $page < $total_pages - 2) {
+            for ($i = $page - 2; $i <= $page; $i++) {
+                echo '<a href="?page=koa-suite&tab=push&paged=' . $i . '&koa_push_search=' . urlencode($search) . '"';
+                if ($i == $page) echo ' style="font-weight:bold;"';
+                echo '>' . $i . '</a>';
+            }
+            echo '<span>...</span>';
+            for ($i = $total_pages - 2; $i <= $total_pages; $i++) {
+                echo '<a href="?page=koa-suite&tab=push&paged=' . $i . '&koa_push_search=' . urlencode($search) . '"';
+                if ($i == $page) echo ' style="font-weight:bold;"';
+                echo '>' . $i . '</a>';
+            }
+        }
+        // If current page is near the end
+        else {
+            for ($i = $total_pages - 5; $i <= $total_pages; $i++) {
+                if ($i < 1) continue;
+                echo '<a href="?page=koa-suite&tab=push&paged=' . $i . '&koa_push_search=' . urlencode($search) . '"';
+                if ($i == $page) echo ' style="font-weight:bold;"';
+                echo '>' . $i . '</a>';
+            }
+        }
+    }
+    ?>
+
     <?php if($page < $total_pages): ?>
         <a href="?page=koa-suite&tab=push&paged=<?php echo $page+1; ?>&koa_push_search=<?php echo urlencode($search); ?>">Next »</a>
     <?php endif; ?>
