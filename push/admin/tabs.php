@@ -23,48 +23,61 @@
 	add_action('wp_enqueue_scripts', 'enqueue_push_styles');
 ?>
 
-	
+<?php
+// Get active tab from URL, default to 'pushUsers'
+$active_tab = isset($_GET['push-tab']) ? sanitize_text_field($_GET['push-tab']) : 'pushUsers';
+
+// Map tab names to tab numbers
+$tab_map = [
+    'pushUsers'   => 1,
+    'pushSender'  => 2,
+    'pushSettings'=> 3,
+    'pushHistory' => 4,
+];
+$active_tab_num = isset($tab_map[$active_tab]) ? $tab_map[$active_tab] : 1;
+?>
+
 <div id="koapush">
-	<div class="tabs">
-	  <div class="tab active" onclick="goTab(1,this)">
-		<img src="https://s3.eu-west-1.amazonaws.com/images.kingofapp.com/wp_koa_suite/icons/user.png" alt="">
-		<span>User list</span>
-		<div class="alerta"></div>
-	  </div>
-	  <div class="tab disabled" onclick="goTab(2, this)" >
-		<img src="https://s3.eu-west-1.amazonaws.com/images.kingofapp.com/wp_koa_suite/icons/notification.png" alt="">
-		<span>Push sender</span>
-		<div class="alerta"></div>
-	  </div>
-	  <div class="tab" onclick="goTab(3, this)">
-		<img src="https://s3.eu-west-1.amazonaws.com/images.kingofapp.com/wp_koa_suite/icons/settings.png" alt="">
-		<span>Setings</span>
-		<div class="alerta"></div>
-	  </div>
-	  <div class="tab" onclick="goTab(4, this)">
-		<img src="https://s3.eu-west-1.amazonaws.com/images.kingofapp.com/wp_koa_suite/icons/settings.png" alt="">
-		<span>Push History</span>
-		<div class="alerta"></div>
-	  </div>
-	</div>
-  
+    <div class="tabs">
+      <a href="?page=koa-suite&tab=push&push-tab=pushUsers" class="tab <?php echo $active_tab_num === 1 ? 'active' : ''; ?>">
+        <img src="https://s3.eu-west-1.amazonaws.com/images.kingofapp.com/wp_koa_suite/icons/user.png" alt="">
+        <span>User list</span>
+        <div class="alerta"></div>
+      </a>
+      <a href="?page=koa-suite&tab=push&push-tab=pushSender" class="tab <?php echo $active_tab_num === 2 ? 'active' : ''; ?>">
+        <img src="https://s3.eu-west-1.amazonaws.com/images.kingofapp.com/wp_koa_suite/icons/notification.png" alt="">
+        <span>Push sender</span>
+        <div class="alerta"></div>
+      </a>
+      <a href="?page=koa-suite&tab=push&push-tab=pushSettings" class="tab <?php echo $active_tab_num === 3 ? 'active' : ''; ?>">
+        <img src="https://s3.eu-west-1.amazonaws.com/images.kingofapp.com/wp_koa_suite/icons/settings.png" alt="">
+        <span>Setings</span>
+        <div class="alerta"></div>
+      </a>
+      <a href="?page=koa-suite&tab=push&push-tab=pushHistory" class="tab <?php echo $active_tab_num === 4 ? 'active' : ''; ?>">
+        <img src="https://s3.eu-west-1.amazonaws.com/images.kingofapp.com/wp_koa_suite/icons/settings.png" alt="">
+        <span>Push History</span>
+        <div class="alerta"></div>
+      </a>
+    </div>
+
   <!-- users list -->
-  <div class="tabContent" id="tab1">
-  	<?php include(WP_PLUGIN_DIR.'/koa-suite/push/admin/pushUsers.php'); ?>   
+  <div class="tabContent" id="tab1" style="<?php echo $active_tab_num === 1 ? 'display:flex;' : 'display:none;'; ?>">
+    <?php include(WP_PLUGIN_DIR.'/koa-suite/push/admin/pushUsers.php'); ?>   
   </div>
-	
+    
   <!-- send push -->
-  <div class="tabContent disabled" id="tab2" >
-  	<?php include(WP_PLUGIN_DIR.'/koa-suite/push/admin/pushSender.php'); ?>   	
+  <div class="tabContent" id="tab2" style="<?php echo $active_tab_num === 2 ? 'display:flex;' : 'display:none;'; ?>">
+    <?php include(WP_PLUGIN_DIR.'/koa-suite/push/admin/pushSender.php'); ?>   
   </div>
-	
+    
   <!-- config panel -->
-  <div class="tabContent" id="tab3">
-	<?php include(WP_PLUGIN_DIR.'/koa-suite/push/admin/pushSettings.php'); ?>   
+  <div class="tabContent" id="tab3" style="<?php echo $active_tab_num === 3 ? 'display:flex;' : 'display:none;'; ?>">
+    <?php include(WP_PLUGIN_DIR.'/koa-suite/push/admin/pushSettings.php'); ?>   
   </div>
 
-  <!-- config panel -->
-  <div class="tabContent" id="tab4">
+  <!-- push history -->
+  <div class="tabContent" id="tab4" style="<?php echo $active_tab_num === 4 ? 'display:flex;' : 'display:none;'; ?>">
     <?php include(WP_PLUGIN_DIR.'/koa-suite/push/admin/pushHistory.php'); ?>   
   </div>
 </div>
