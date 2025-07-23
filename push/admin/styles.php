@@ -232,6 +232,8 @@
 		font-family: 'Roboto', sans-serif;
 		font-weight: 800;
 	}
+	#koapush .status-success { color: green; font-weight: bold; }
+    #koapush .status-failed { color: red; font-weight: bold; }
 	
 	#setingsPage{
 		display: flex;
