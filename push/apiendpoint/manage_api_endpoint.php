@@ -44,38 +44,55 @@ add_action('rest_api_init', function () {
 
 function send_firebase_notification( WP_REST_Request $request ) {
     global $wpdb;
-    
-    // Get the parameters from the request
+
+    // Get parameters
     $user_id = sanitize_text_field( $request->get_param('user_id') );
     $title = sanitize_text_field( $request->get_param('title') );
     $body = sanitize_text_field( $request->get_param('body') );
-    
-    // Get optional parameter (could be a string or an array)
-    $custom_user = $request->get_param('device_token'); // Might be NULL, string, or array
+    $device_token = $request->get_param('device_token');
 
-    if (is_null($custom_user)) {
-        $custom_user = ''; // Default value if not provided
-    } elseif (is_array($custom_user)) {
-        $custom_user = array_map('sanitize_text_field', $custom_user); // Sanitize array
+    // Validate required fields
+    if ( empty( $title ) || empty( $body ) ) {
+        return new WP_Error( 'invalid_data', 'Title and body are required.', array( 'status' => 400 ) );
+    }
+
+    // Decide which device token to use
+    if ( !empty( $device_token ) ) {
+        // Use device_token from request
+        $token_used = is_array($device_token) ? array_map('sanitize_text_field', $device_token) : sanitize_text_field($device_token);
+
+        // Try to locate user by device token
+        $user_query = new WP_User_Query([
+            'meta_key'   => 'koa_push_code',
+            'meta_value' => $token_used,
+            'number'     => 1,
+            'fields'     => 'ID'
+        ]);
+        $found_users = $user_query->get_results();
+        $user_used = !empty($found_users) ? $found_users[0] : 1;
     } else {
-        $custom_user = sanitize_text_field($custom_user); // Sanitize string
+        // Use device token from user meta
+        $token_used = get_user_meta( $user_id, 'koa_push_code', true );
+        $user_used = $user_id;
+        if ( empty( $token_used ) ) {
+            return new WP_Error( 'no_token', 'No device token found for this user.', array( 'status' => 404 ) );
+        }
     }
 
-    // Validate the input
-    if ( empty( $user_id ) || empty( $title ) || empty( $body ) ) {
-        return new WP_Error( 'invalid_data', 'User ID, title, and body are required.', array( 'status' => 400 ) );
-    }
-
-    // Get the user's device token from user meta
-    $user_token = get_user_meta( $user_id, 'koa_push_code', true );
-    if ( empty( $user_token ) ) {
-        return new WP_Error( 'no_token', 'No device token found for this user.', array( 'status' => 404 ) );
-    }
-
-    // Get Firebase Project ID from settings
-    $firebase_project_id = get_option( 'firebase_project_id' );
-    if ( empty( $firebase_project_id ) ) {
-        return new WP_Error( 'no_project_id', 'Firebase project ID is not set.', array( 'status' => 500 ) );
+    // Get Firebase Project ID from option, or extract from credentials file if not set
+    $firebase_project_id = get_option('firebase_project_id');
+    if (empty($firebase_project_id)) {
+        $credentials_path = WP_PLUGIN_DIR . '/koa-suite/push/includes/google-credentials.json';
+        if (!file_exists($credentials_path)) {
+            return new WP_Error('no_credentials', 'Google JSON credentials file not found.', array('status' => 500));
+        }
+        $credentials_json = file_get_contents($credentials_path);
+        $credentials = json_decode($credentials_json, true);
+        if (empty($credentials['project_id'])) {
+            return new WP_Error('no_project_id', 'Firebase project ID not found in credentials file.', array('status' => 500));
+        }
+        $firebase_project_id = $credentials['project_id'];
+        update_option('firebase_project_id', $firebase_project_id);
     }
 
     // Define the Firebase credentials path (adjust the path accordingly)
@@ -111,7 +128,7 @@ function send_firebase_notification( WP_REST_Request $request ) {
                 'title' => $title,
                 'body' => $body,
             ),
-            'token' => $custom_user,
+            'token' => $token_used,
             'android' => array(
                 'priority' => 'high',
                 'notification' => array(
@@ -166,7 +183,8 @@ function send_firebase_notification( WP_REST_Request $request ) {
     // Save the result in the database
     $table_name = $wpdb->prefix . 'koa_push_notifications';
     $wpdb->insert( $table_name, array(
-        'user_id'               => $user_id,
+        'user_id'               => $user_used,
+        'device_token'          => $token_used,
         'notification_title'    => $title,
         'notification_body'     => $body,
         'notification_send_date' => current_time( 'mysql' ),
