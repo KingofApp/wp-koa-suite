@@ -11,7 +11,7 @@ $offset = ($page - 1) * $items_per_page;
 $table_name = $wpdb->prefix . 'koa_push_notifications';
 $users_table = $wpdb->prefix . 'users';
 
-// Construct the query to get notifications
+// Main query
 $query = "SELECT n.*, u.display_name, u.user_email 
           FROM $table_name AS n
           LEFT JOIN $users_table AS u ON u.ID = n.user_id
@@ -19,7 +19,8 @@ $query = "SELECT n.*, u.display_name, u.user_email
 
 $params = [];
 if ( !empty( $search_query ) ) {
-    $query .= " AND (u.display_name LIKE %s OR u.user_email LIKE %s OR n.notification_title LIKE %s)";
+    $query .= " AND (u.display_name LIKE %s OR u.user_email LIKE %s OR n.notification_title LIKE %s OR n.device_token LIKE %s)";
+    $params[] = '%' . $search_query . '%';
     $params[] = '%' . $search_query . '%';
     $params[] = '%' . $search_query . '%';
     $params[] = '%' . $search_query . '%';
@@ -38,21 +39,19 @@ $device_token_user1 = $wpdb->get_var(
     )
 );
 
-// Count the total number of records for pagination
+// Count query for pagination
 $total_query = "SELECT COUNT(*) FROM $table_name AS n
                 LEFT JOIN $users_table AS u ON u.ID = n.user_id
                 WHERE 1=1";
-
-// Add search condition to the total count query
+$total_params = [];
 if ( !empty( $search_query ) ) {
-    $total_query .= $wpdb->prepare(
-        " AND (u.display_name LIKE %s OR u.user_email LIKE %s OR n.notification_title LIKE %s)",
-        '%' . $search_query . '%',
-        '%' . $search_query . '%',
-        '%' . $search_query . '%'
-    );
+    $total_query .= " AND (u.display_name LIKE %s OR u.user_email LIKE %s OR n.notification_title LIKE %s OR n.device_token LIKE %s)";
+    $total_params[] = '%' . $search_query . '%';
+    $total_params[] = '%' . $search_query . '%';
+    $total_params[] = '%' . $search_query . '%';
+    $total_params[] = '%' . $search_query . '%';
 }
-$total_items = $wpdb->get_var($total_query);
+$total_items = $wpdb->get_var($wpdb->prepare($total_query, ...$total_params));
 $total_pages = ceil($total_items / $items_per_page);
 ?>
 
@@ -84,24 +83,18 @@ $total_pages = ceil($total_items / $items_per_page);
     <?php if ( ! empty( $notifications ) ) : ?>
         <?php foreach ( $notifications as $notification ) : ?>
             <?php
-            // Get device token for this notification
-            if ($notification->user_id == 1) {
-                $device_token = $notification->device_token;
+            // Determine if this notification is associated with a user
+            if ($notification->user_id == 1 && $notification->device_token == $device_token_user1) {
                 $show_user = false;
             } else {
-                $device_token = $wpdb->get_var(
-                    $wpdb->prepare(
-                        "SELECT meta_value FROM {$wpdb->prefix}usermeta WHERE user_id = %d AND meta_key = 'koa_push_code'",
-                        $notification->user_id
-                    )
-                );
                 $show_user = true;
             }
+            $device_token = $notification->device_token;
             ?>
             <tr>
                 <td><input type="checkbox" /></td>
-                <td><?php echo $show_user ? esc_html( $notification->display_name ) : ''; ?></td>
-                <td><?php echo $show_user ? esc_html( $notification->user_email ) : ''; ?></td>
+                <td><?php echo $show_user ? esc_html( $notification->display_name ) : '<span style="color:#888;">API / No User</span>'; ?></td>
+                <td><?php echo $show_user ? esc_html( $notification->user_email ) : '<span style="color:#888;">API / No User</span>'; ?></td>
                 <td>
                     <textarea readonly style="width:100%;height:2em;"><?php echo esc_html( $device_token ); ?></textarea>
                 </td>
