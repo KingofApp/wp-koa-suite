@@ -12,24 +12,7 @@
             </tr>
         </table>
         <?php submit_button('Upload'); ?>
-    </form>
-    <form action="options.php" method="POST">
-         <!-- This part handles the settings fields -->
-        <?php settings_fields('koa-push-settings-group'); ?>
-        <?php do_settings_sections('koa-push-settings-group'); ?>
-        <table>
-            <tr>
-                <th scope="row"><label for="firebase_project_ID">Firebase Project ID</label></th>
-                <td>
-                    <input type="text" name="firebase_project_ID" id="firebase_project_ID"
-                           value="<?php echo esc_attr(get_option('firebase_project_ID', '')); ?>" 
-                           placeholder="Enter Firebase Project ID" />
-                </td>
-            </tr>
-        </table>
-
-        <!-- Submit button for both settings and file upload -->
-        <?php submit_button('Save Settings'); ?>
+        <input type="hidden" name="push-tab" value="<?php echo esc_attr($active_tab); ?>">
     </form>
 </div>
 
