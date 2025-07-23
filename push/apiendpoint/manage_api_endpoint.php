@@ -211,34 +211,42 @@ function get_push_notifications(WP_REST_Request $request) {
     global $wpdb;
 
     $device_token = $request->get_param('device_token');
-    $user_id = get_current_user_id();
-
-    if (!$user_id) {
-        return new WP_Error('not_logged_in', 'User must be logged in.', array('status' => 403));
-    }
-
     $table_name = $wpdb->prefix . 'koa_push_notifications';
+    $page = $request->get_param('page');
+    $per_page = 20;
 
     if (!empty($device_token)) {
         $device_token = sanitize_text_field($device_token);
-        $results = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT * FROM $table_name WHERE device_token = %s ORDER BY notification_send_date DESC",
-                $device_token
-            ),
-            ARRAY_A
-        );
+        $where = $wpdb->prepare("WHERE device_token = %s", $device_token);
     } else {
-        $results = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT * FROM $table_name WHERE user_id = %d ORDER BY notification_send_date DESC",
-                $user_id
-            ),
-            ARRAY_A
-        );
+        $user = apply_filters('determine_current_user', false);
+        if (!$user) {
+            return new WP_Error('not_logged_in', 'User must be logged in.', array('status' => 403));
+        }
+        $where = $wpdb->prepare("WHERE user_id = %d", $user);
     }
 
-    return rest_ensure_response($results);
+    if (empty($page)) {
+        $sql = "SELECT * FROM $table_name $where ORDER BY notification_send_date DESC";
+        $results = $wpdb->get_results($sql, ARRAY_A);
+        $total_items = count($results);
+        $total_pages = 1;
+        $current_page = 1;
+    } else {
+        $total_items = $wpdb->get_var("SELECT COUNT(*) FROM $table_name $where");
+        $total_pages = ceil($total_items / $per_page);
+        $current_page = max(1, intval($page));
+        $offset = ($current_page - 1) * $per_page;
+        $query = "$where ORDER BY notification_send_date DESC LIMIT %d OFFSET %d";
+        $sql = $wpdb->prepare("SELECT * FROM $table_name $query", $per_page, $offset);
+        $results = $wpdb->get_results($sql, ARRAY_A);
+    }
+
+    return rest_ensure_response(array(
+        'current_page'   => $current_page,
+        'total_pages'    => $total_pages,
+        'notifications'  => $results,
+    ));
 }
 
 function validate_api_request($request) {
