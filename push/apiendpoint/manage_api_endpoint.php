@@ -41,6 +41,13 @@ add_action('rest_api_init', function () {
     ));
 });
 
+add_action('rest_api_init', function () {
+    register_rest_route('firebase/v1', '/get-notifications/', array(
+        'methods' => 'GET',
+        'callback' => 'get_push_notifications',
+        'permission_callback' => 'validate_api_request'
+    ));
+});
 
 function send_firebase_notification( WP_REST_Request $request ) {
     global $wpdb;
@@ -198,6 +205,40 @@ function send_firebase_notification( WP_REST_Request $request ) {
     }
 
     return rest_ensure_response( array( 'success' => true, 'message' => 'Notification sent successfully.' ) );
+}
+
+function get_push_notifications(WP_REST_Request $request) {
+    global $wpdb;
+
+    $device_token = $request->get_param('device_token');
+    $user_id = get_current_user_id();
+
+    if (!$user_id) {
+        return new WP_Error('not_logged_in', 'User must be logged in.', array('status' => 403));
+    }
+
+    $table_name = $wpdb->prefix . 'koa_push_notifications';
+
+    if (!empty($device_token)) {
+        $device_token = sanitize_text_field($device_token);
+        $results = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM $table_name WHERE device_token = %s ORDER BY notification_send_date DESC",
+                $device_token
+            ),
+            ARRAY_A
+        );
+    } else {
+        $results = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM $table_name WHERE user_id = %d ORDER BY notification_send_date DESC",
+                $user_id
+            ),
+            ARRAY_A
+        );
+    }
+
+    return rest_ensure_response($results);
 }
 
 function validate_api_request($request) {
