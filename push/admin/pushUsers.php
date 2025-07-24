@@ -6,11 +6,28 @@ $search = isset($_GET['koa_push_search']) ? trim($_GET['koa_push_search']) : get
 // Pagination calculation
 $offset = ($page - 1) * $per_page;
 
+/**
+ * ✅ ORDER USERS BY koa_push_code FIRST
+ * We use the pre_user_query hook to modify the SQL query before execution
+ */
+add_action('pre_user_query', 'order_users_by_koa_push_code');
+function order_users_by_koa_push_code($query) {
+    global $wpdb;
+
+    // Only modify for our specific admin page
+    if (isset($_GET['page']) && $_GET['page'] === 'koa-suite' && isset($_GET['tab']) && $_GET['tab'] === 'push') {
+        $query->query_from .= " LEFT JOIN {$wpdb->usermeta} AS umeta 
+                                ON ({$wpdb->users}.ID = umeta.user_id 
+                                AND umeta.meta_key = 'koa_push_code')";
+        $query->query_orderby = "ORDER BY (umeta.meta_value IS NOT NULL AND umeta.meta_value != '') DESC, {$wpdb->users}.ID ASC";
+    }
+}
+
 // Arguments for get_users()
 $args = [
     'number'  => $per_page,
     'offset'  => $offset,
-    'orderby' => 'ID',
+    'orderby' => 'ID', // Fallback (actual ordering is handled by our SQL hook)
     'order'   => 'ASC',
 ];
 
@@ -22,7 +39,7 @@ if (!empty($search)) {
 
 $users = get_users($args);
 
-// Get total users for pagination
+// Get total users for pagination (not affected by the ordering hook)
 if (!empty($search)) {
     $total_users = count(get_users([
         'search' => '*' . esc_attr($search) . '*',
@@ -54,12 +71,13 @@ $total_pages = ceil($total_users / $per_page);
         <th>Code</th>
     </tr>
     <?php foreach ($users as $user): ?>
+    <?php $code = get_user_meta($user->ID, 'koa_push_code', true); ?>
     <tr>
         <td><input type="checkbox"/></td>
         <td><?php echo '<span>' . esc_html($user->display_name) . '</span>'; ?></td>
         <td><?php echo '<span>' . esc_html($user->user_email) . '</span>'; ?></td>
         <td>
-            <?php if ($code = get_user_meta($user->ID, 'koa_push_code', true)): ?>
+            <?php if ($code): ?>
                 <button class="btn" type="button" onclick="openPushSender('<?php echo $user->ID; ?>', '<?php echo esc_js($code); ?>')">Send</button>
             <?php else: ?>
                 <button type="button" class="btn" disabled>Send</button>
