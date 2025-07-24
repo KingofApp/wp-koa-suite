@@ -68,6 +68,18 @@ function koa_enqueue_bootstrap() {
 }
 add_action('admin_enqueue_scripts', 'koa_enqueue_bootstrap');
 
+add_filter( 'allowed_options', 'koa_suite_allowed_options' );
+
+function koa_suite_allowed_options( $allowed_options ) {
+    if ( ! isset( $allowed_options['koa-suite'] ) ) {
+        $allowed_options['koa-suite'] = [];
+    }
+    $allowed_options['koa-suite'][] = 'koa_embed_key';
+    $allowed_options['koa-suite'][] = 'koa_embed_style';
+
+    return $allowed_options;
+}
+
 // Inicialización condicional
 if (is_admin()) {
     // Incluir el core administrativo

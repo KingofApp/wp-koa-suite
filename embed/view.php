@@ -26,8 +26,8 @@
     <!-- ✅ END INFO SECTION -->
 
     <form method="post" action="options.php">
-        <?php settings_fields( 'koa-embed-settings-group' ); ?>
-        <?php do_settings_sections( 'koa-embed-settings-group' ); ?>
+        <?php settings_fields( 'koa-suite' ); ?>
+        <?php do_settings_sections( 'koa-suite' ); ?>
         <table class="form-table">
             <tr valign="top">
                 <th scope="row">Query param</th>

@@ -1,5 +1,4 @@
 <?php
-
 add_action( 'admin_init', 'register_koa_embed_settings' );
 
 /* Seting the form fields */
@@ -15,6 +14,6 @@ function register_koa_embed_settings() {
         'default'           => "header, footer{ display: none !important}"
     );
     //register our settings
-    register_setting( 'koa-embed-settings-group', 'koa_embed_key',  $koa_embed_key_default);
-    register_setting( 'koa-embed-settings-group', 'koa_embed_style', $koa_embed_style_default );
+	register_setting( 'koa-suite', 'koa_embed_key', $koa_embed_key_default );
+    register_setting( 'koa-suite', 'koa_embed_style', $koa_embed_style_default );
 }
