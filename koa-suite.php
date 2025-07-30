@@ -3,7 +3,7 @@
  * Plugin Name:       King of App Suite
  * Plugin URI:        https://kingofapp.com/
  * Description:       Manage and control all the KOA plugins
- * Version:          1.3.2
+ * Version:          1.3.3
  * Requires PHP:      7.2
  * Author:           King of App
  * Author URI:       https://kingofapp.com/
