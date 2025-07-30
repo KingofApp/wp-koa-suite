@@ -24,6 +24,41 @@ function push_setings() {
     ));
 }
 
+//send the loged in usser to the app
+add_action('wp_footer', 'koa_inject_test_postmessage_script');
+function koa_inject_test_postmessage_script() {
+    if (!is_user_logged_in()) {
+        return;
+    }
+
+    $user_id = get_current_user_id();
+    ?>
+    <script>
+    (function () {
+        const userId = <?php echo json_encode($user_id); ?>;
+        let counter = 1;
+        const maxMessages = 10;
+
+        const intervalId = setInterval(() => {
+            if (counter > maxMessages) {
+                clearInterval(intervalId);
+                console.log('Message loop stopped after', maxMessages, 'messages.');
+                return;
+            }
+
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'koaPushUser',
+                    userId: userId
+                }, '*');
+                console.log('PostMessage sent:', counter, 'User ID:', userId);
+                counter++;
+            }
+        }, 5000); // Every 5 seconds
+    })();
+    </script>
+    <?php
+}
 
 //create a table on the database to store all the push 
 function koa_create_push_notifications_table() {
