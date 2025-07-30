@@ -8,13 +8,20 @@ add_action( 'rest_api_init', function () {
 } );
     
 function get_push_code(WP_REST_Request $request){
-    $user = apply_filters('determine_current_user', false);
-    if( !apply_filters('determine_current_user', false) ) {
+	// Get user ID from request or current session
+	$user = $request->get_param('app_user');
+	if(empty($user)){
+		$user = apply_filters('determine_current_user', false);
+	}
+	// Check if user is valid
+    if( empty($user) || !get_user_by('ID', $user) ) {
         return new WP_REST_Response( wp_json_encode( array("error" => true, "code" =>"user_not_loged_in")), 400);
     }
-        
+    
+	//Save the push code
     $actionStatus = save_user_code($user, $request->get_param('push_code') );
     
+	//Response
     if( !$actionStatus && get_user_meta( $user, 'koa_push_code', true ) != "" ) {
         return new WP_REST_Response( wp_json_encode( array("error" => false, "success" => "code_alredy_set")), 200);
     }
