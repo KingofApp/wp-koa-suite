@@ -17,7 +17,8 @@ function get_push_code(WP_REST_Request $request){
     if( empty($user) || !get_user_by('ID', $user) ) {
         return new WP_REST_Response( wp_json_encode( array("error" => true, "code" =>"user_not_loged_in")), 400);
     }
-    
+    $user = intval($user);
+
 	//Save the push code
     $actionStatus = save_user_code($user, $request->get_param('push_code') );
     
@@ -51,8 +52,7 @@ add_action('rest_api_init', function () {
 add_action('rest_api_init', function () {
     register_rest_route('firebase/v1', '/get-notifications/', array(
         'methods' => 'GET',
-        'callback' => 'get_push_notifications',
-        'permission_callback' => 'validate_api_request'
+        'callback' => 'get_push_notifications'
     ));
 });
 
@@ -141,6 +141,7 @@ function send_firebase_notification( WP_REST_Request $request ) {
             'notification' => array(
                 'title' => $title,
                 'body' => $body,
+				'image' => "https://s3.eu-west-1.amazonaws.com/files.kingofapp.com/56938a9400694efa24bb4953/assets/images/icon.png"
             ),
             'token' => $token_used,
             'android' => array(
@@ -148,26 +149,16 @@ function send_firebase_notification( WP_REST_Request $request ) {
                 'notification' => array(
                     "title" => $title,
                     "body" => $body,
-                    "color" => '#44ff00',
+					"icon" => "screen",
                     "sound" => 'default',
-                    "default_sound" => true,
-                    "default_vibrate_timings" => true,
-                    "default_light_settings" => true,
-                    "light_settings" => array(
-                        "color" => array(
-                            "red" => 1,
-                            "green" => 1,
-                            "blue" => 1,
-                            "alpha" => 1.0
-                        )
-                    ),
+                    "default_sound" => true                
                 ),
             ),
             'apns' => array(
                 'headers' => array(
                     'apns-priority' => '10'
                 )
-            ),
+            )
         )
     );
     $response = wp_remote_post( $fcm_url, array(
@@ -217,6 +208,16 @@ function send_firebase_notification( WP_REST_Request $request ) {
 function get_push_notifications(WP_REST_Request $request) {
     global $wpdb;
 
+	// Get user ID from request or current session
+	$user = $request->get_param('app_user');
+	if(empty($user)){
+		$user = apply_filters('determine_current_user', false);
+	}
+	// Check if user is valid
+    if( empty($user) || !get_user_by('ID', $user) ) {
+        return new WP_REST_Response( wp_json_encode( array("error" => true, "code" =>"user_not_loged_in")), 400);
+    }
+	
     $device_token = $request->get_param('device_token');
     $table_name = $wpdb->prefix . 'koa_push_notifications';
     $page = $request->get_param('page');
@@ -226,10 +227,17 @@ function get_push_notifications(WP_REST_Request $request) {
         $device_token = sanitize_text_field($device_token);
         $where = $wpdb->prepare("WHERE device_token = %s", $device_token);
     } else {
-        $user = apply_filters('determine_current_user', false);
-        if (!$user) {
+		// Get user ID from request or current session
+		$user = $request->get_param('app_user');
+		if(empty($user)){
+			$user = apply_filters('determine_current_user', false);
+		}
+		
+        if (empty($user) || !get_user_by('ID', $user)) {
             return new WP_Error('not_logged_in', 'User must be logged in.', array('status' => 403));
         }
+		
+		$user = intval($user);
         $where = $wpdb->prepare("WHERE user_id = %d", $user);
     }
 
