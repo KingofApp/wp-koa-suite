@@ -60,12 +60,16 @@ function koa_inject_test_postmessage_script() {
     <?php
 }
 
+// Bump this when change the table structure
+define('KOA_PUSH_DB_VERSION', '1.1');
+
 //create a table on the database to store all the push 
-function koa_create_push_notifications_table() {
+function koa_create_or_update_push_notifications_table() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'koa_push_notifications';
     $charset_collate = $wpdb->get_charset_collate();
 
+    // NOTE: dbDelta can add missing columns when they appear in this SQL.
     $sql = "CREATE TABLE $table_name (
         id bigint(20) NOT NULL AUTO_INCREMENT,
         user_id bigint(20) NOT NULL,
@@ -74,15 +78,27 @@ function koa_create_push_notifications_table() {
         notification_body text NOT NULL,
         notification_send_date datetime NOT NULL,
         notification_status varchar(20) NOT NULL,
+        error_message text NULL,
         PRIMARY KEY  (id)
     ) $charset_collate;";
 
-    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-    dbDelta( $sql );
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    dbDelta($sql);
+
+    // record the installed db version
+    update_option('koa_push_db_version', KOA_PUSH_DB_VERSION);
 }
 
-register_activation_hook( WP_PLUGIN_DIR . '/koa-suite/koa-suite.php', 'koa_create_push_notifications_table' );
 
+register_activation_hook( WP_PLUGIN_DIR . '/koa-suite/koa-suite.php', 'koa_create_or_update_push_notifications_table' );
+
+// Also run when the code loads, if version changed, so existing sites upgrade.
+add_action('plugins_loaded', function () {
+    $installed = get_option('koa_push_db_version');
+    if ($installed !== KOA_PUSH_DB_VERSION) {
+        koa_create_or_update_push_notifications_table();
+    }
+});
 
 // Hook into wp_mail to trigger the REST API call when an email is sent
 add_filter('wp_mail', 'trigger_firebase_notification_with_recipient_user_id');
