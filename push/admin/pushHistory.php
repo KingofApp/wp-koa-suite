@@ -101,11 +101,24 @@ $total_pages = ceil($total_items / $items_per_page);
                 <td><?php echo esc_html( $notification->notification_title ); ?></td>
                 <td><?php echo esc_html( $notification->notification_body ); ?></td>
                 <td><?php echo esc_html( date( 'Y-m-d H:i:s', strtotime( $notification->notification_send_date ) ) ); ?></td>
-                <td>
+                <!--<td>
                     <?php if ( $notification->notification_status === 'success' ) : ?>
                         <span class="status-success">Success</span>
                     <?php else : ?>
                         <span class="status-failed">Failed</span>
+                    <?php endif; ?>
+                </td>-->
+                <td>
+                    <?php if ( $notification->notification_status === 'success' ) : ?>
+                        <span class="status-success"
+                            title="<?php echo esc_attr( $notification->error_message ); ?>">
+                            Success
+                        </span>
+                    <?php else : ?>
+                        <span class="status-failed"
+                            title="<?php echo esc_attr( $notification->error_message ); ?>">
+                            Failed
+                        </span>
                     <?php endif; ?>
                 </td>
             </tr>
