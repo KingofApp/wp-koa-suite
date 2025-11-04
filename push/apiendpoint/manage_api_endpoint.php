@@ -1,7 +1,93 @@
 <?php
+// Cross domain 
+add_action('rest_api_init', function () {
+    add_filter('rest_pre_serve_request', function ($value) {
+        if (!headers_sent()) {
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+            header('Access-Control-Allow-Credentials: true');
+            header('Access-Control-Allow-Headers: Authorization, Content-Type, X-WP-Nonce');
+        }
+        return $value;
+    }, 9999);
+}, 9999);
+
+// ---- NEW route: get notifications by device token (public)
+add_action('rest_api_init', function () {
+    register_rest_route('firebase/v1', '/get-notifications-by-device/', array(
+        'methods'             => array('GET', 'OPTIONS'),
+        'callback'            => 'get_push_notifications_by_device',
+        // Make this endpoint public so it can be used from apps without WP auth
+        'permission_callback' => '__return_true',
+        'args'                => array(
+            'device_token' => array(
+                'required' => true,
+                'type'     => 'string',
+            ),
+            'page' => array(
+                'required' => false,
+                'type'     => 'integer',
+            ),
+        ),
+    ));
+});
+
+/**
+ * NEW: Return push notifications for a given device token (public)
+ * Query params:
+ *   - device_token (required)
+ *   - page (optional, integer; if omitted -> returns all for that token)
+ * Response:
+ *   {
+ *     current_page: int,
+ *     total_pages: int,
+ *     notifications: [ ... ]
+ *   }
+ */
+function get_push_notifications_by_device(WP_REST_Request $request) {
+    global $wpdb;
+
+    $table_name   = $wpdb->prefix . 'koa_push_notifications';
+    $device_token = $request->get_param('device_token');
+    $page         = $request->get_param('page');
+    $per_page     = 20;
+
+    if (empty($device_token)) {
+        return new WP_Error('missing_device_token', 'The device_token parameter is required.', array('status' => 400));
+    }
+
+    $device_token = sanitize_text_field($device_token);
+    $where        = $wpdb->prepare("WHERE device_token = %s", $device_token);
+
+    if (empty($page)) {
+        // No pagination: return all for this device token
+        $sql          = "SELECT * FROM $table_name $where ORDER BY notification_send_date DESC";
+        $results      = $wpdb->get_results($sql, ARRAY_A);
+        $total_items  = is_array($results) ? count($results) : 0;
+        $total_pages  = 1;
+        $current_page = 1;
+    } else {
+        // Paginated
+        $total_items  = (int) $wpdb->get_var("SELECT COUNT(*) FROM $table_name $where");
+        $total_pages  = max(1, (int) ceil($total_items / $per_page));
+        $current_page = max(1, (int) $page);
+        $offset       = ($current_page - 1) * $per_page;
+
+        $query = "$where ORDER BY notification_send_date DESC LIMIT %d OFFSET %d";
+        $sql   = $wpdb->prepare("SELECT * FROM $table_name $query", $per_page, $offset);
+        $results = $wpdb->get_results($sql, ARRAY_A);
+    }
+
+    return rest_ensure_response(array(
+        'current_page'  => $current_page,
+        'total_pages'   => $total_pages,
+        'notifications' => $results ?: array(),
+    ));
+}
+
 // Create a REST API endpoint to get the user device token
 add_action( 'rest_api_init', function () {
-    register_rest_route( 'koapush/v1', 'push_code', array(
+    register_rest_route( 'koapush/v1', '/push_code', array(
     'methods' => 'GET',
     'callback' => 'get_push_code',
     ) );
@@ -194,6 +280,7 @@ function send_firebase_notification( WP_REST_Request $request ) {
         'notification_body'     => $body,
         'notification_send_date' => current_time( 'mysql' ),
         'notification_status'   => $status,
+        'error_message'         => $error_message,
     ));
 
     if ( $status === 'failed' ) {
